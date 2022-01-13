@@ -9,7 +9,8 @@ from nltk.corpus import stopwords
 
 
 
-base = [('eu sou admirada por muitos','alegria'),
+base = [('eu estou alegre e com confiança','alegria'),
+        ('eu sou admirada por muitos','alegria'),
         ('me sinto completamente amado','alegria'),
         ('amar e maravilhoso','alegria'),
         ('estou me sentindo muito animado novamente','alegria'),
@@ -78,24 +79,48 @@ def extratorpalavras(documento):
 
 
 
+
+
 semstopWords = removestopword(base)
-print(semstopWords)
+#print(semstopWords)
 
 frasescomstemming = aplicastemmer(base)
-print(frasescomstemming)
+#print(frasescomstemming)
 
 palavras = buscapalavras(frasescomstemming)
-print(palavras)
+#print(palavras)
 
 frequencia = buscafrequencia(palavras)
-print(frequencia.most_common(50))
+#print(frequencia.most_common(50))
 
 palavrasunicas =  buscapalavrasunicas(frequencia)
-print(palavrasunicas)
+#print(palavrasunicas)
 
 caracteristicasfrase = extratorpalavras(['am','nov','dia'])
-print(caracteristicasfrase)
+#print(caracteristicasfrase)
 
 basecompleta = nltk.classify.apply_features(extratorpalavras,frasescomstemming)
-print(basecompleta[0])
+#print(basecompleta[0])
+
+#Criando a tabela de probabilidades
+classificador = nltk.NaiveBayesClassifier.train(basecompleta)
+#print(classificador.labels())
+#print(classificador.show_most_informative_features(10))
+
+teste = 'estou com alegria e feliz'
+testestemmig = []
+stemmer = nltk.stem.RSLPStemmer()
+for (palavras) in teste.split():
+    comstem = [ p for p in palavras.split()]
+    testestemmig.append(str(stemmer.stem(comstem[0])))
+
+#print(testestemmig)
+novo = extratorpalavras(testestemmig)
+#print(novo)
+
+print(classificador.classify(novo))
+distribuicao = classificador.prob_classify(novo)
+for classe in distribuicao.samples():
+    print('%s: %f' %(classe,distribuicao.prob(classe)))
+
 
